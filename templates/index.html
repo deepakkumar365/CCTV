@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGMS School Live CCTV Dashboard</title>
+    <title>{{ company.name }} Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -33,7 +33,7 @@
         }
 
         header {
-            padding: 1.5rem;
+            padding: 1rem;
             text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             background: rgba(2, 6, 23, 0.9);
@@ -45,7 +45,7 @@
 
         h1 {
             font-weight: 600;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             letter-spacing: -0.025em;
             background: linear-gradient(to right, #fff, var(--accent-color));
             -webkit-background-clip: text;
@@ -55,25 +55,24 @@
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            padding: 12px;
+            gap: 8px;
+            padding: 8px;
             flex-grow: 1;
         }
 
         .camera-card {
             background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
             aspect-ratio: 16 / 9;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, border-color 0.2s;
+            transition: transform 0.2s;
         }
 
         .camera-card:hover {
-            border-color: var(--accent-color);
-            transform: scale(1.02);
+            transform: scale(1.01);
             z-index: 10;
         }
 
@@ -92,13 +91,13 @@
 
         .camera-label {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 4px;
+            left: 4px;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(4px);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
             font-weight: 500;
             z-index: 5;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -106,19 +105,18 @@
 
         .status-indicator {
             position: absolute;
-            bottom: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
+            bottom: 4px;
+            right: 4px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--error-color);
-            box-shadow: 0 0 8px var(--error-color);
             z-index: 5;
         }
 
         .status-indicator.online {
             background: var(--online-color);
-            box-shadow: 0 0 8px var(--online-color);
+            box-shadow: 0 0 6px var(--online-color);
         }
 
         .error-overlay {
@@ -131,26 +129,24 @@
             align-items: center;
             justify-content: center;
             background: rgba(0, 0, 0, 0.8);
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.4);
             z-index: 2;
             display: none;
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 1200px) {
             .grid-container { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 640px) {
             .grid-container { grid-template-columns: 1fr; }
-            h1 { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>SGMS School Live CCTV Dashboard</h1>
+        <h1>{{ company.name }}</h1>
     </header>
 
     <div class="grid-container">
@@ -160,19 +156,20 @@
             <div class="status-indicator" id="status-{{ ch_id }}"></div>
             <div class="video-wrapper">
                 <video id="video-{{ ch_id }}" muted playsinline></video>
-                <div class="error-overlay" id="error-{{ ch_id }}">Signal Lost</div>
+                <div class="error-overlay" id="error-{{ ch_id }}">SIGNAL LOST</div>
             </div>
         </div>
         {% endfor %}
     </div>
 
     <script>
+        const companyId = "{{ company_id }}";
         const channels = {{ channels | tojson }};
         const players = {};
 
         function initChannel(ch_id) {
             const video = document.getElementById(`video-${ch_id}`);
-            const videoSrc = `/stream/${ch_id}/stream.m3u8`;
+            const videoSrc = `/stream/${companyId}/${ch_id}/stream.m3u8`;
             const statusIndicator = document.getElementById(`status-${ch_id}`);
             const errorOverlay = document.getElementById(`error-${ch_id}`);
 
@@ -185,7 +182,7 @@
                 hls.attachMedia(video);
                 
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play().catch(() => {}); // Autoplay might be blocked without interaction
+                    video.play().catch(() => {});
                     statusIndicator.classList.add('online');
                     errorOverlay.style.display = 'none';
                 });
@@ -208,14 +205,12 @@
             }
         }
 
-        // Initialize all channels
         Object.keys(channels).forEach(ch_id => {
             initChannel(ch_id);
         });
 
-        // Periodic status check
         function checkStatus() {
-            fetch('/status')
+            fetch(`/status/${companyId}`)
                 .then(res => res.json())
                 .then(data => {
                     Object.keys(data).forEach(ch_id => {
@@ -232,9 +227,7 @@
                 });
         }
 
-        setInterval(checkStatus, 10000);
-
-        // Optional: Click to expand or focus (could be added later)
+        setInterval(checkStatus, 15000);
     </script>
 </body>
 </html>
