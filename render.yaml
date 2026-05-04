@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: cctv-live-stream
+    env: docker
+    plan: free
+    region: ohio
+    envVars:
+      - key: PORT
+        value: 5000
+    autoDeploy: true
