@@ -15,6 +15,12 @@ COMPANIES = {
         "num_channels": 16,
         "stream_suffix": "02" # Substream 2
     },
+    "vrds": {
+        "name": "VRDS",
+        "rtsp_base": "rtsp://admin:%40dmin%4012@103.155.32.140:554/Streaming/Channels/",
+        "num_channels": 16,
+        "stream_suffix": "02"
+    },
     # "other_company": {
     #     "name": "Other Company CCTV",
     #     "rtsp_base": "rtsp://user:pass@IP:port/Streaming/Channels/",
