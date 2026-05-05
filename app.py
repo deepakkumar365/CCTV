@@ -17,7 +17,7 @@ COMPANIES = {
     },
     "vrds": {
         "name": "VRDS",
-        "rtsp_base": "rtsp://admin:%40dmin%4012@103.155.32.140:554/Streaming/Channels/",
+        "rtsp_base": "rtsp://admin:%40dmin%4012@103.155.32.140:54384/Streaming/Channels/",
         "num_channels": 16,
         "stream_suffix": "02"
     },
